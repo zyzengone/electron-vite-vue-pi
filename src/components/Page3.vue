@@ -8,7 +8,8 @@
     </button>
 </template>
 
-<script>
+<script lang="ts">
+    //@ts-nocheck
     export default {
         name: "Page3",
         data(){

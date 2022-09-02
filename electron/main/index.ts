@@ -1,7 +1,8 @@
-import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron'
+//@ts-nocheck
+import { app, BrowserWindow, shell, ipcMain, dialog,Menu } from 'electron'
 import { release } from 'os'
 import { join } from 'path'
-const WebSocket = require("ws")
+const WebSocket = require("ws");
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration()
 
@@ -9,7 +10,7 @@ if (release().startsWith('6.1')) app.disableHardwareAcceleration()
 if (process.platform === 'win32') app.setAppUserModelId(app.getName())
 
 if (!app.requestSingleInstanceLock()) {
-  app.quit()
+  app.quit();
   process.exit(0)
 }
 
@@ -33,19 +34,12 @@ const indexHtml = join(ROOT_PATH.dist, 'index.html')
 
 
 //webSocket 服务端地址
-const ws = new WebSocket('ws://localhost:8001/websocket/box')
-ws.onerror = function(event) {
-  dialog.showMessageBox({
-    message: "服务端没有启动，无法接收消息",
-    buttons: [
-      "确定",
-    ]
-  })
-}
+
 
 async function createWindow() {
   win = new BrowserWindow({
     title: 'Main window',
+    // fullscreen:true,
     icon: join(ROOT_PATH.public, 'favicon.ico'),
     webPreferences: {
       preload,
@@ -55,16 +49,9 @@ async function createWindow() {
       nodeIntegration: true,
       contextIsolation: false,
     },
-  })
-  ws.on('message', function incoming(body) {
-    win.webContents.send('init_win_id', '123');
-    dialog.showMessageBox({
-      message: body,
-      buttons: [
-        "确定",
-      ]
-    })
   });
+  Menu.setApplicationMenu(null);
+
   if (app.isPackaged) {
     win.loadFile(indexHtml)
   } else {
@@ -84,7 +71,6 @@ async function createWindow() {
     return { action: 'deny' }
   })
 }
-
 app.whenReady().then(createWindow)
 
 app.on('window-all-closed', () => {
@@ -124,3 +110,110 @@ ipcMain.handle('open-win', (event, arg) => {
     // childWindow.webContents.openDevTools({ mode: "undocked", activate: true })
   }
 })
+
+let ws = null;
+let wsTime = 10; // 重连次数
+const wsUrl = "ws://114.55.172.48:8002/websocket/box";
+let flag=true;
+function wsInit() {
+  ws.onopen = function () {
+    wsHeart.reStart();
+  };
+  ws.onmessage = function (e) {
+    wsHeart.reStart();
+    if (e.data === "pong") {
+      console.log(666.909, "pong");
+    } else {
+      // 处理正常消息的地方
+      win.webContents.send('init_win_id', '123');
+    }
+  };
+  ws.onclose = function () {
+    if (wsTime > 0) {
+      wsHeart.reConnect();
+    } else {
+      wsHeart.reClose();
+    }
+  };
+  ws.onerror = function () {
+    console.log("jj")
+    if (wsTime > 0) {
+      wsHeart.reConnect();
+    } else {
+      wsHeart.reClose();
+    }
+  };
+
+  window.onbeforeunload = function () {
+    wsHeart.reClose();
+  };
+}
+
+var wsHeart = {
+  timeout: 3000, // 心跳延迟时间
+  timeoutObj: null,
+  serverTimeoutObj: null,
+  connectTimeoutObj: null,
+  lockConnect: false,
+  lockConnectTimeout: 2000, // 重连延迟时间
+  reSet: function () {
+    wsTime = 10;
+    clearTimeout(this.timeoutObj);
+    clearTimeout(this.serverTimeoutObj);
+    clearTimeout(this.connectTimeoutObj);
+    this.timeoutObj = null;
+    this.serverTimeoutObj = null;
+    this.connectTimeoutObj = null;
+  },
+  reClose: function () {
+    this.reSet();
+    ws.close();
+  },
+  reStart: function () {
+    this.reSet();
+    this.reCheck();
+  },
+  reCheck: function () {
+    this.timeoutObj = setTimeout(() => {
+      try {
+        ws.send("ping");
+      }catch (e) {
+        let flag=false;
+        let interval = setInterval(function () {
+          ws.close();
+          wsHeart.newWs();
+        },2000);
+        if (flag){
+          clearInterval(interval);
+          interval=null;
+        }
+      }
+
+      this.serverTimeoutObj = setTimeout(() => {
+        this.reClose();
+      }, this.timeout);
+    }, this.timeout);
+  },
+  reConnect: function () {
+    if (!this.lockConnect) {
+      console.log(this.lockConnect)
+      wsTime--;
+      this.lockConnect = true;
+      this.connectTimeoutObj = setTimeout(() => {
+        this.newWs();
+        this.lockConnect = false;
+      }, this.lockConnectTimeout);
+    }
+  },
+  newWs: function () {
+    try {
+      ws = new WebSocket(wsUrl);
+      wsInit();
+      flag=true;
+    } catch (e) {
+      this.reConnect();
+    }
+  },
+};
+
+wsHeart.newWs();

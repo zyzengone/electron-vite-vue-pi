@@ -15,7 +15,9 @@
 
 </template>
 
-<script>
+<script lang="ts">
+    //@ts-nocheck
+    import anime from "animejs"
     export default {
         name: "Home",
         data(){
@@ -28,10 +30,26 @@
         },
         methods:{
             move(){
+                anime({
+                    targets: '.face',
+                    keyframes: [
+                        {translateY: -70},
+                        {translateY: 0},
+                        {translateX: -40},
+                        {translateX: 0},
+                    ],
+                    duration: 4000,
+                    delay:2000,
+                    easing: 'easeOutElastic(1, .8)',
+                    loop: true
+                });
                 var that = this;
                 setInterval(function(){
-                    that.zayan=!that.zayan
-                },500);
+                    that.zayan=!that.zayan;
+                    setTimeout(function () {
+                        that.zayan=!that.zayan
+                    },400)
+                },3000);
             },
         }
     }
