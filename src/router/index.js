@@ -4,12 +4,14 @@ import welcome from "../components/HelloWorld.vue";
 import page2 from "../components/Page2.vue";
 import page3 from "../components/Page3.vue";
 import home from "../components/Home.vue";
+import bili from "../components/BiliPage.vue";
 import transitionExtend from "./transitionExtends";
 const routes = [
-    { path: "/", redirect: '/home' },
+    { path: "/", redirect: '/bili' },
     { path: "/page2", component: page2 },
     { path: "/home", component: home },
-    { path: "/page3", component: page3 }
+    { path: "/page3", component: page3 },
+    { path: "/bili", component: bili },
 ]
 
 // Vue-router新版本中，需要使用createRouter来创建路由
