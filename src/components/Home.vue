@@ -1,107 +1,38 @@
 <template>
-    <div class="face">
-        <div v-if="zayan" class="eyeZayan">
-            <div class="eye1Up"></div>
-            <div class="eye1Down"></div>
-        </div>
-        <div v-else class="eye"></div>
-        <div v-if="zayan" class="eyeZayan">
-            <div class="eye2Up"></div>
-            <div class="eye2Down"></div>
-        </div>
-        <div v-else class="eye"></div>
-<!--        <button @click="toggle">toggle</button>-->
+    <div>
+        <UsualFace v-if="face=='usual'"></UsualFace>
+        <fear-face v-if="face=='fear'"></fear-face>
+        <heart-face v-if="face=='heart'"></heart-face>
     </div>
 
 </template>
 
 <script lang="ts">
     //@ts-nocheck
-    import anime from "animejs"
+    import UsualFace from "./emoji/UsualFace.vue"
+    import FearFace from "./emoji/FearFace.vue"
+    import HeartFace from "./emoji/HeartFace.vue"
     export default {
         name: "Home",
+        components:{
+          UsualFace,
+            FearFace,
+            HeartFace
+        },
         data(){
             return{
-                zayan:false
+                face:'fear'
             }
         },
         mounted(){
-          this.move();
+          // this.move();
         },
         methods:{
-            move(){
-                anime({
-                    targets: '.face',
-                    keyframes: [
-                        {translateY: -70},
-                        {translateY: 0},
-                        {translateX: -40},
-                        {translateX: 0},
-                    ],
-                    duration: 4000,
-                    delay:2000,
-                    easing: 'easeOutElastic(1, .8)',
-                    loop: true
-                });
-                var that = this;
-                setInterval(function(){
-                    that.zayan=!that.zayan;
-                    setTimeout(function () {
-                        that.zayan=!that.zayan
-                    },400)
-                },3000);
-            },
+
         }
     }
 </script>
 
 <style scoped>
-    .face{
-        display: flex;
-        width: 70vmin;
-        height: 70vmin;
-        justify-content: space-between;
-    }
-    .eye{
-        width: 20%;
-        height: 60%;
-        background-color: #ffffff;
-    }
-    .eyeZayan{
-        width: 20%;
-        height: 60%;
-        /*display: flex;*/
-        /*flex-direction: column;*/
-    }
-    .eye1Up{
-        width: 100%;
-        height: 60%;
-        background-color: #ffffff;
-        transform: translate(0,27%) rotate(135deg);
-    }
 
-    .eye1Down{
-        width: 100%;
-        height: 60%;
-        background-color: #ffffff;
-        transform: translate(0,-40%) rotate(-135deg) ;
-    }
-    .eye2Up{
-        width: 100%;
-        height: 60%;
-        background-color: #ffffff;
-        transform: translate(0,27%) rotate(45deg);
-    }
-
-    .eye2Down{
-        width: 100%;
-        height: 60%;
-        background-color: #ffffff;
-        transform: translate(0,-40%) rotate(-45deg) ;
-    }
-    .eye{
-        width: 20%;
-        height: 60%;
-        background-color: #ffffff;
-    }
 </style>
