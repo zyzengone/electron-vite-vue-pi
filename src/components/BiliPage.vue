@@ -1,8 +1,7 @@
 <template>
 <div>
-  <video id="homeVideo" class="home-video" autoplay loop muted poster="">
-    <source src="https://xbeibeix.com/api/bilibili/biliplayer/?url=BV1EU4y127UZ" type="video/mp4">
-  </video>
+  <iframe src="https://xbeibeix.com/api/bilibili/biliplayer/?url=BV1EU4y127UZ" allowfullscreen="allowfullscreen" width="100%" height="100%" scrolling="no" frameborder="0" sandbox="allow-top-navigation allow-same-origin allow-forms allow-scripts"></iframe>
+
 </div>
 </template>
 
