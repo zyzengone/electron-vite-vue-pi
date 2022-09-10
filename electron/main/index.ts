@@ -1,5 +1,5 @@
 //@ts-nocheck
-import { app, BrowserWindow, shell, ipcMain, dialog,Menu } from 'electron'
+import { app, BrowserWindow, shell, ipcMain, dialog,Menu,globalShortcut  } from 'electron'
 import { release } from 'os'
 import { join } from 'path'
 const WebSocket = require("ws");
@@ -71,7 +71,14 @@ async function createWindow() {
     return { action: 'deny' }
   })
 }
-app.whenReady().then(createWindow)
+app.whenReady().then(() => {
+  createWindow();
+  const ret = globalShortcut.register('X', () => {
+    console.log('CommandOrControl+X is pressed')
+    win.webContents.send('leftPage', '123');
+  })
+    }
+);
 
 app.on('window-all-closed', () => {
   win = null
@@ -94,7 +101,13 @@ app.on('activate', () => {
     createWindow()
   }
 })
+app.on('will-quit', () => {
+  // 注销快捷键
+  globalShortcut.unregister('X')
 
+  // 注销所有快捷键
+  globalShortcut.unregisterAll()
+})
 // new window example arg: new windows url
 ipcMain.handle('open-win', (event, arg) => {
   const childWindow = new BrowserWindow({
@@ -136,7 +149,6 @@ function wsInit() {
     }
   };
   ws.onerror = function () {
-    console.log("jj")
     if (wsTime > 0) {
       wsHeart.reConnect();
     } else {

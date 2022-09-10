@@ -5,13 +5,15 @@ import page2 from "../components/Page2.vue";
 import page3 from "../components/Page3.vue";
 import home from "../components/Home.vue";
 import bili from "../components/BiliPage.vue";
+import tomato from "../components/TomatoClock.vue"
 import transitionExtend from "./transitionExtends";
 const routes = [
-    { path: "/", redirect: '/bili' },
+    { path: "/", redirect: '/tomato' },
     { path: "/page2", component: page2 },
     { path: "/home", component: home },
     { path: "/page3", component: page3 },
     { path: "/bili", component: bili },
+    { path: "/tomato", component: tomato },
 ]
 
 // Vue-router新版本中，需要使用createRouter来创建路由

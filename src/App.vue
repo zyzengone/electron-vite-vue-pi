@@ -17,6 +17,9 @@ export default {
     electron.ipcRenderer.on('init_win_id', (event, message) => {
       this.$router.push('/page3');
     })
+    electron.ipcRenderer.on('leftPage', (event, message) => {
+      this.$router.push('/page2');
+    })
   },
   methods:{
     onToPage2(){
@@ -43,7 +46,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  /*margin-top: 60px;*/
 }
 
 .logo-box {
