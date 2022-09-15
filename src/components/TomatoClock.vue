@@ -32,13 +32,13 @@
         },
         methods:{
             init() {
-                this.status = 1;
+                this.status = 0;
                 this.setTimer();
                 // setDefaultTime();
                 this.updateTime(this.workTime * 1000);
                 console.log(this.$refs.path);
                 this.$refs.path1.setAttribute('stroke-width', 0);
-                this.startup();
+
             },
             updateTime(ms) {
                 let s = (ms / 1000).toFixed(0);
@@ -46,7 +46,7 @@
                 let mm = Math.floor((s / 60)).toFixed(0);
 
                 this.time = `${mm.toString().padStart(2, 0)}:${ss.toString().padStart(2, 0)}`;
-                this.setProgress(1 - ms / ((status === 1 ? 25*60 : 5*60) * 1000));
+                this.setProgress(1 - ms / ((this.status === 1 ? 25*60 : 5*60) * 1000));
             },
             setProgress(num) {
                 // 可获取路径的长度
@@ -54,15 +54,16 @@
                 this.$refs.path1.setAttribute('stroke-dasharray', `${(this.progressLength * num).toFixed(2)}px ${this.progressLength}px`);
             },
             async startup(){
-                let res = 'rest';
+                let res = 'work';
                 if (res === 'rest') {
                     //休息
-                    status = 2;
+                    this.status = 2;
                     this.timer.stop();
                     this.timer.start(this.restTime);
                 } else if (res === 'work') {
                     //工作
-                    status = 1;
+                    this.status = 1;
+                    this.timer.stop();
                     this.timer.start(this.workTime);
                 }
             },
@@ -74,9 +75,9 @@
                     },
                     onend: function () {
                         that.updateTime(0);
-                        if (status === 1) {
+                        if (this.status === 1) {
                             this.startup();
-                        } else if (status === 2) {
+                        } else if (this.status === 2) {
                             // 休息结束
                             this.timer.stop();
                         }
@@ -86,6 +87,9 @@
         },
         mounted(){
             this.init();
+            ipcRenderer.on('J', (event, message) => {
+                this.startup();
+            })
         }
     }
 
