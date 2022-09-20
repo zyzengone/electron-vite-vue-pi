@@ -12,7 +12,8 @@
 
 </template>
 
-<script>
+<script lang="ts">
+//@ts-nocheck
     import anime from "animejs"
     export default {
         name: "FearFace",

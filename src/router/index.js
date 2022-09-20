@@ -8,7 +8,7 @@ import bili from "../components/BiliPage.vue";
 import tomato from "../components/TomatoClock.vue"
 import transitionExtend from "./transitionExtends";
 const routes = [
-    { path: "/", redirect: '/tomato' },
+    { path: "/", redirect: '/bili' },
     { path: "/page2", component: page2 },
     { path: "/home", component: home },
     { path: "/page3", component: page3 },
