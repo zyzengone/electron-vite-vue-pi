@@ -76,6 +76,9 @@ app.whenReady().then(() => {
   const ret = globalShortcut.register('X', () => {
     console.log('CommandOrControl+X is pressed')
     win.webContents.send('leftPage', '123');
+  });
+  globalShortcut.register('J', () => {
+    win.webContents.send('J', '123');
   })
     }
 );
@@ -103,7 +106,8 @@ app.on('activate', () => {
 })
 app.on('will-quit', () => {
   // 注销快捷键
-  globalShortcut.unregister('X')
+  globalShortcut.unregister('X');
+  globalShortcut.unregister('J');
 
   // 注销所有快捷键
   globalShortcut.unregisterAll()
